@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Schedule Manager</string>
+    <string name="createEventButtonText">Add Event</string>
+    <string name="addClassButtonText">Add Class</string>
+    <string name="todaysEventsText"></string>
+    <string name="eventTitleBoxText">Event Title</string>
+    <string name="startTimeBoxText">Event Start Time</string>
+    <string name="endTimeBoxText">Event End Time</string>
+    <string name="eventDescBoxText">Event Description</string>
+</resources>
