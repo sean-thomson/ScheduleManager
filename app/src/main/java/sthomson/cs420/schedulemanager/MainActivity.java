@@ -21,6 +21,8 @@ import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Calendar selectedDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView calendarView, int year, int month, int day) {
+                selectedDate = new Calendar.Builder().setDate(year, month, day).build();
                 Calendar startTime = new Calendar.Builder().setDate(year, month, day).setTimeOfDay(0, 0, 0).build();
                 Calendar endTime = new Calendar.Builder().setDate(year, month, day).setTimeOfDay(23, 59, 59).build();
 
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (cur.getCount() == 0) {
                     TextView textView = findViewById(R.id.todaysEventsView);
-                    textView.setText("No events scheduled on " + month + "/" + day + "/" + year);
+                    textView.setText("No events scheduled on " + (month+1) + "/" + day + "/" + year);
                 }
 
                 while (cur.moveToNext()) {
@@ -73,10 +76,20 @@ public class MainActivity extends AppCompatActivity {
         final Button createEventButton = findViewById(R.id.createEventButton);
         createEventButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                /*
                 Intent intent = new Intent(Intent.ACTION_INSERT)
                         .setData(CalendarContract.Events.CONTENT_URI);
                 startActivity(intent);
+                */
+
+                startCreateEvent();
             }
         });
+    }
+
+    protected void startCreateEvent() {
+        Intent intent = new Intent(this, CreateEventActivity.class);
+        intent.putExtra("date", selectedDate);
+        startActivity(intent);
     }
 }

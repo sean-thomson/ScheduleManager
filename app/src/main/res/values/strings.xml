@@ -7,4 +7,7 @@
     <string name="startTimeBoxText">Event Start Time</string>
     <string name="endTimeBoxText">Event End Time</string>
     <string name="eventDescBoxText">Event Description</string>
+    <string name="locationBoxText">Event Location</string>
+    <string name="createEventHeaderText">Adding an event for</string>
+    <string name="addEventButtonText">Add Event to Calendar</string>
 </resources>
