@@ -47,6 +47,31 @@ public class CreateEventActivity extends AppCompatActivity {
         final EditText eventEnd = findViewById(R.id.endTimeBox);
         final EditText eventLocation = findViewById(R.id.locationBox);
 
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm");
+        String eventStartTime = eventStart.getText().toString();
+        Date eventStartTimeDate = selectedDate.getTime();
+        try {
+            eventStartTimeDate = timeFormat.parse(eventStartTime);
+        }
+        catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        final Calendar selectedDateStartTime = selectedDate;
+        selectedDateStartTime.add(Calendar.HOUR, 5);
+
+        SimpleDateFormat endTimeFormat = new SimpleDateFormat("hh:mm");
+        String eventEndTime = eventEnd.getText().toString();
+        Date eventEndTimeDate = selectedDate.getTime();
+        try {
+            eventEndTimeDate = endTimeFormat.parse(eventEndTime);
+        }
+        catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        final Calendar selectedDateEndTime = selectedDate;
+        selectedDateEndTime.add(Calendar.HOUR, 6);
+
         final Button addEventButton = findViewById(R.id.addEventButton);
         addEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,9 +80,9 @@ public class CreateEventActivity extends AppCompatActivity {
                         .setData(CalendarContract.Events.CONTENT_URI)
                         .putExtra(CalendarContract.Events.TITLE, eventTitle.getText().toString())
                         .putExtra(CalendarContract.Events.DESCRIPTION, eventDesc.getText().toString())
-                        //.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, eventStart.getText())
-                        //.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, eventEnd.getText())
-                        .putExtra(CalendarContract.Events.EVENT_LOCATION, eventLocation.getText());
+                        .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, selectedDateStartTime.getTimeInMillis())
+                        .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, selectedDateEndTime.getTimeInMillis())
+                        .putExtra(CalendarContract.Events.EVENT_LOCATION, eventLocation.getText().toString());
                 startActivity(intent);
             }
         });
