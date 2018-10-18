@@ -45,12 +45,14 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:maxLength="5"
-        android:inputType="time"
         android:hint="@string/startTimeBoxText"
         app:layout_constraintTop_toBottomOf="@id/eventDescBox"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="50px"/>
+        android:layout_marginTop="50px"
+        android:onClick="showTimePickerDialog"
+        android:editable="false"
+        android:focusable="false" />
 
     <EditText
         android:id="@+id/endTimeBox"
@@ -63,7 +65,10 @@
         app:layout_constraintTop_toBottomOf="@id/startTimeBox"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="50px" />
+        android:layout_marginTop="50px"
+        android:onClick="showTimePickerDialog"
+        android:editable="false"
+        android:focusable="false" />
 
     <EditText
         android:id="@+id/locationBox"
@@ -86,5 +91,103 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="50px"/>
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteButtonText"
+        app:layout_constraintTop_toBottomOf="@id/addEventButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"
+        android:onClick="deleteEvent"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:isScrollContainer="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/whatDaysText"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/mondayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/monday"
+                app:layout_constraintTop_toBottomOf="@id/deleteButton"
+                android:visibility="invisible" />
+
+            <CheckBox
+                android:id="@+id/tuesdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tuesday"
+                app:layout_constraintTop_toBottomOf="@id/mondayCheckBox"
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:id="@+id/wednesdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wednesday"
+                app:layout_constraintTop_toBottomOf="@id/tuesdayCheckBox"
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:id="@+id/thursdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/wednesdayCheckBox"
+                android:text="@string/thursday"
+
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:id="@+id/fridayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/friday"
+                app:layout_constraintTop_toBottomOf="@id/thursdayCheckBox"
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:id="@+id/saturdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/saturday"
+                app:layout_constraintTop_toBottomOf="@id/fridayCheckBox"
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:id="@+id/sundayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sunday"
+                app:layout_constraintTop_toBottomOf="@id/saturdayCheckBox"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/whatDaysText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/whatDaysString"
+        app:layout_constraintBottom_toBottomOf="@id/deleteButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -10,4 +10,16 @@
     <string name="locationBoxText">Event Location</string>
     <string name="createEventHeaderText">Adding an event for</string>
     <string name="addEventButtonText">Add Event to Calendar</string>
+    <string name="viewBlackboardButtonText">View Blackboard</string>
+    <string name="editEventText">Editing an event for</string>
+    <string name="deleteButtonText">Delete Event</string>
+    <string name="classNameBoxText">Class Name</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="whatDaysString">Check the days that this class meets on</string>
 </resources>
