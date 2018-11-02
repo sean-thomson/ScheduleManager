@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Date selectedDate;
     private WebView webView;
-    private Context mainActivityContext = this;
+    private Context mainActivityContext;
     private boolean certificate = false;
     private ArrayList<Event> eventList;
 
@@ -57,27 +58,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainActivityContext = this;
 
         selectedDate = Calendar.getInstance().getTime();
 
         webView = findViewById(R.id.mainWebView);
 
-        if (eventList == null) {
-            eventList = new ArrayList<>();
-        }
-
         try {
-            FileInputStream fis = new FileInputStream(getFilesDir().getAbsolutePath() + "/events.ser");
+            FileInputStream fis = openFileInput("events");
             ObjectInputStream ois = new ObjectInputStream(fis);
             eventList = (ArrayList<Event>) ois.readObject();
             ois.close();
+            fis.close();
         } catch (FileNotFoundException e) {
             //Do nothing
             System.out.println("FILE NOT FOUND");
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.print("IOEXCEPTION");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            System.out.println("CLASS NOT FOUND");
+        }
+
+        if (eventList == null) {
+            eventList = new ArrayList<>();
         }
 
         Exception webException = null;
@@ -102,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             blackboard.setVisibility(View.INVISIBLE);
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        if (this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, 1);
         }
 
@@ -113,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView calendarView, int year, int month, int day) {
-                if (ActivityCompat.checkSelfPermission(mainActivityContext, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                if (mainActivityContext.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_GRANTED) {
                     selectedDate = new Calendar.Builder().setDate(year, month, day).build().getTime();
                     Calendar startTime = new Calendar.Builder().setDate(year, month, day).setTimeOfDay(0, 0, 0).build();
                     Calendar endTime = new Calendar.Builder().setDate(year, month, day).setTimeOfDay(23, 59, 59).build();
@@ -214,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("day of week: " + dayOfWeek);
                         String strDay = Integer.toString(dayOfWeek);
 
+                        int viewCount = 0;
+
                         for (int i = 0; i < eventList.size(); i++) {
                             if (eventList.get(i).getRecurringDays().contains(strDay) || (eventList.get(i).getStartTime().getYear() == selectedDate.getYear() && eventList.get(i).getStartTime().getDate() == selectedDate.getDate() && eventList.get(i).getStartTime().getMonth() == selectedDate.getMonth())) {
                                 final int[] count = {i};
@@ -249,7 +256,14 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                                 linearLayout.addView(textView);
+                                viewCount++;
                             }
+                        }
+
+                        if (viewCount == 0) {
+                            TextView textView = new TextView(mainActivityContext);
+                            textView.setText("No events scheduled on " + (month + 1) + "/" + day + "/" + year);
+                            linearLayout.addView(textView);
                         }
                     }
 
@@ -294,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.getExtras() != null) {
+        if (intent.hasExtra("list")) {
             Bundle b = intent.getExtras();
             eventList = (ArrayList<Event>) b.get("list");
         }
@@ -302,10 +316,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        super.onStop();
+
+        this.deleteFile("events");
+
         FileOutputStream fos = null;
 
         try {
-            fos = this.openFileOutput("events.ser", MODE_PRIVATE);
+            fos = openFileOutput("events", Context.MODE_PRIVATE);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("FILE NOT FOUND IN WRITE");
@@ -320,8 +338,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             System.out.println("IOEXCEPTION WHILE WRITING");
         }
-
-        super.onStop();
     }
 
     @Override
@@ -344,9 +360,15 @@ public class MainActivity extends AppCompatActivity {
         Bundle b = new Bundle();
         intent.putExtra("date", selectedDate);
         intent.putExtra("task", "create");
-        intent.putExtra("permission", ActivityCompat.checkSelfPermission(mainActivityContext, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED);
-        if (ActivityCompat.checkSelfPermission(mainActivityContext, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        intent.putExtra("permission", this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_GRANTED);
+        System.out.println("PERMISSION: " + (this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_GRANTED));
+        System.out.println("PERMISSION DENIED?: " + (this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_DENIED));
+        if (this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_DENIED) {
+            if (eventList == null) {
+                eventList = new ArrayList<>();
+            }
             b.putSerializable("list", eventList);
+            System.out.println(eventList);
             intent.putExtras(b);
         }
         startActivity(intent);
@@ -357,8 +379,11 @@ public class MainActivity extends AppCompatActivity {
         Bundle b = new Bundle();
         intent.putExtra("date", selectedDate);
         intent.putExtra("task", "class");
-        intent.putExtra("permission", ActivityCompat.checkSelfPermission(mainActivityContext, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED);
-        if (ActivityCompat.checkSelfPermission(mainActivityContext, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        intent.putExtra("permission", this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_GRANTED);
+        if (this.checkCallingOrSelfPermission("Manifest.permission.READ_CALENDAR") == PackageManager.PERMISSION_DENIED) {
+            if (eventList == null) {
+                eventList = new ArrayList<>();
+            }
             b.putSerializable("list", eventList);
             intent.putExtras(b);
         }
